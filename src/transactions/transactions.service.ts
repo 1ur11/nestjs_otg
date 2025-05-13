@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from './entities/transaction.entity';
-import { Between, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  FindOptionsWhere,
+  Repository,
+  MoreThanOrEqual,
+  LessThanOrEqual,
+} from 'typeorm';
 import { GetTransactionsDto } from './dto/get-transactions.dto';
 import { TransactionResponseDto } from './dto/transaction-response.dto';
 
@@ -18,8 +23,12 @@ export class TransactionsService {
 
     const where: FindOptionsWhere<Transaction> = {};
 
-    if (startDate && endDate) {
-      where.createdAt = Between(startDate, endDate);
+    if (startDate) {
+      where.createdAt = MoreThanOrEqual(startDate);
+    }
+
+    if (endDate) {
+      where.createdAt = LessThanOrEqual(endDate);
     }
 
     if (type) {
@@ -28,7 +37,7 @@ export class TransactionsService {
 
     const [items, totalItems] = await this.transactionRepo.findAndCount({
       where,
-      order: { createdAt: 'DESC' },
+      order: { createdAt: 'ASC' },
       skip,
       take: limit,
     });

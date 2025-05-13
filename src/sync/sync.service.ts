@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron } from '@nestjs/schedule';
 import axios from 'axios';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { AgrTransaction } from '../aggregator/schemas/agr-transaction.schema';
 
 @Injectable()
@@ -20,16 +20,16 @@ export class SyncService {
     this.logger.log('Cron job started: Fetching new transactions');
 
     try {
-      // Retrieve the latest 'createdAt' timestamp from MongoDB
+      // Retrieve the latest 'transactionCreatedAt' timestamp from MongoDB
       const latestTransaction = await this.agrTransactionModel
         .findOne()
-        .sort({ createdAt: -1 })
-        .select('createdAt')
+        .sort({ transactionCreatedAt: -1 })
+        .select('transactionCreatedAt')
         .lean();
 
       // Default start date if no transactions exist
       const startDate = latestTransaction
-        ? latestTransaction.createdAt.toISOString()
+        ? latestTransaction.transactionCreatedAt.toISOString()
         : '2021-02-01T00:00:00Z';
 
       this.logger.log(`Fetching transactions from startDate: ${startDate}`);
@@ -65,9 +65,9 @@ export class SyncService {
             $setOnInsert: {
               transactionId: tx.id,
               userId: tx.userId,
-              createdAt: new Date(tx.createdAt),
+              transactionCreatedAt: new Date(tx.createdAt),
               type: tx.type,
-              amount: tx.amount,
+              amount: Types.Decimal128.fromString(tx.amount),
             },
           },
           upsert: true,

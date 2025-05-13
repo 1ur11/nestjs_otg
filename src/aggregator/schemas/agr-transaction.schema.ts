@@ -11,7 +11,7 @@ export class AgrTransaction extends Document {
   userId: string;
 
   @Prop({ required: true })
-  createdAt: Date;
+  transactionCreatedAt: Date;
 
   @Prop({ required: true, enum: TransactionType })
   type: TransactionType;
