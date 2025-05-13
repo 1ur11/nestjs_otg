@@ -16,4 +16,7 @@ export const validationSchema = Joi.object({
   MONGO_INITDB_DATABASE: Joi.string().required(),
   MONGO_HOST: Joi.string().required(),
   MONGO_PORT: Joi.number().required(),
+
+  TRANSACTIONS_API_URL: Joi.string().required(),
+  TRANSACTIONS_API_LIMIT: Joi.number().default(1000),
 });

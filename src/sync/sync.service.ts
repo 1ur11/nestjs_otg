@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron } from '@nestjs/schedule';
+import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { Model, Types } from 'mongoose';
 import { AgrTransaction } from '../aggregator/schemas/agr-transaction.schema';
@@ -12,6 +13,7 @@ export class SyncService {
   constructor(
     @InjectModel(AgrTransaction.name)
     private agrTransactionModel: Model<AgrTransaction>,
+    private configService: ConfigService,
   ) {}
 
   // Call 4 times in a minute to avoid rate limiting
@@ -35,7 +37,7 @@ export class SyncService {
       this.logger.log(`Fetching transactions from startDate: ${startDate}`);
 
       // Fetch new transactions from the transactions API
-      const apiUrl = `http://localhost:3000/transactions?startDate=${encodeURIComponent(startDate)}&limit=1000`; // TODO move to env
+      const apiUrl = `${this.configService.get<string>('TRANSACTIONS_API_URL')}/transactions?startDate=${encodeURIComponent(startDate)}&limit=${this.configService.get<number>('TRANSACTIONS_API_LIMIT')}`;
 
       const response = await axios.get<{
         items: {
