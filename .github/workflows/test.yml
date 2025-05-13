@@ -63,6 +63,9 @@ jobs:
       MONGO_PORT: 27017
       MONGO_HOST: localhost
 
+      TRANSACTIONS_API_URL: http://localhost:3000
+      TRANSACTIONS_API_LIMIT: 1000
+
       NODE_ENV: test
 
     steps:
