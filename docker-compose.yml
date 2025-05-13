@@ -1,0 +1,40 @@
+services:
+  # PostgreSQL Service
+  db:
+    image: postgres:16
+    container_name: nestjs-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - '${POSTGRES_PORT}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  # MongoDB Service
+  mongo:
+    image: mongo:latest
+    container_name: nestjs-mongo
+    restart: unless-stopped
+    environment:
+      # MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      # MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    ports:
+      - '${MONGO_PORT}:27017'
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+  mongo_data:
+
+networks:
+  backend:
+    driver: bridge
