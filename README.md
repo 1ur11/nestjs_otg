@@ -59,3 +59,32 @@ $ npm run test:e2e
 # Test coverage
 $ npm run test:cov
 ```
+
+## Available API
+
+### Transactions API
+
+**Base URL:** `/transactions`
+
+- **GET /transactions**
+  - Description: Retrieve a list of transactions with optional filters for `startDate`, `endDate`, and `type`.
+  - Query Parameters:
+    - `startDate` (optional): Filter transactions created after this date.
+    - `endDate` (optional): Filter transactions created before this date.
+    - `type` (optional): Filter transactions by type (e.g., `payout`, `spent`, `earned`).
+    - `page` (optional): Pagination page number (default: 1).
+    - `limit` (optional): Number of items per page (default: 10).
+  - Example: http://localhost:3000/transactions?startDate=2023-05-13T06:45:44.268Z&limit=1000
+### Aggregator API
+
+**Base URL:** `/aggregator`
+
+- **GET /aggregator/payouts**
+
+  - Description: Retrieve a summary of requested payouts grouped by user.
+  - Example: http://localhost:3000/aggregator/payouts
+- **GET /aggregator/:userId**
+  - Description: Retrieve aggregated transaction data for a specific user.
+  - Path Parameters:
+    - `userId` (string): The ID of the user.
+  - Example: http://localhost:3000/aggregator/00005
