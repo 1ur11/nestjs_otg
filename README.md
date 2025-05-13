@@ -1,6 +1,14 @@
 ## Description
 
-API
+This repository provides two APIs: the Transactions API and the Aggregator API.
+
+The Transactions API uses PostgreSQL for enhanced ACID compliance and flexibility. The Aggregator API leverages MongoDB for scalability and efficient database-side aggregations, enabling the application to handle millions of requests efficiently.
+
+Synchronization between the Transactions API and the Aggregator API is managed by the `SyncService`, which runs as a cron job four times per minute with a limit of 1000 transactions per job. The synchronization process fetches data based on the `createdAt` timestamp. Each job retrieves the latest available `createdAt` data from MongoDB. The sync job also overwrites existing transactions, preventing duplicates and allowing data to be re-fetched if necessary.
+
+This repository includes unit tests and end-to-end (e2e) tests. Additionally, GitHub Actions are implemented for running unit and e2e tests for both APIs and their respective databases.
+
+In the future, if MongoDB's performance is insufficient, it is possible to switch to ClickHouse for faster query execution.
 
 ## Project Setup
 
