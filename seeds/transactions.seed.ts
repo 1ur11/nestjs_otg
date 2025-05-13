@@ -29,7 +29,7 @@ async function seed() {
         length: 100,
       }).map(() => ({
         userId: userId,
-        amount: rand({ min: 10, max: 1000 }),
+        amount: rand({ min: 10, max: 100 }),
         type: TransactionType.SPENT,
       }));
 
@@ -37,7 +37,7 @@ async function seed() {
         length: 100,
       }).map(() => ({
         userId: userId,
-        amount: rand({ min: 10, max: 1000 }),
+        amount: rand({ min: 1, max: 10 }),
         type: TransactionType.PAYOUT,
       }));
 
