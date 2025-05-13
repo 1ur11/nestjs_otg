@@ -1,0 +1,83 @@
+name: Run NestJS Unit & E2E Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run test
+
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: nest
+          POSTGRES_PASSWORD: nest123
+          POSTGRES_DB: nest_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      mongo:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_DATABASE: nest_db
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      POSTGRES_USER: nest
+      POSTGRES_PASSWORD: nest123
+      POSTGRES_DB: nest_db
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: localhost
+
+      MONGO_INITDB_ROOT_USERNAME: nest
+      MONGO_INITDB_ROOT_PASSWORD: nest123
+      MONGO_INITDB_DATABASE: nest_db
+      MONGO_PORT: 27017
+      MONGO_HOST: localhost
+
+      NODE_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run DB init and sync/seed
+        run: npm run db:seed
+
+      - name: Run E2E tests
+        run: npm run test:e2e
